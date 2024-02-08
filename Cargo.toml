@@ -7,6 +7,3 @@ edition = "2021"
 
 [dependencies]
 rust-hdl = "*"
-anyhow = "*"
-clap = "*"
-tokio = { version = "*", features = ["full"] }

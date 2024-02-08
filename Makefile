@@ -12,11 +12,12 @@ output.v: Cargo.toml src/*.rs Makefile
 
 # Synthesis
 output.json: output.v tangnano9k.cst
-	yosys -p "read_verilog output.v; synth_gowin -top top -json output.json"
+	yosys -D LEDS_NR=8 -p "read_verilog output.v; synth_gowin -top top -json output.json"
 
 # Place and Route
+# nextpnr-gowin --json output.json --freq 27 --write output_pnr.json --device ${DEVICE} --family ${FAMILY} --cst ${BOARD}.cst
 output_pnr.json: output.json
-	nextpnr-gowin --json output.json --freq 27 --write output_pnr.json --device ${DEVICE} --family ${FAMILY} --cst ${BOARD}.cst
+	nextpnr-himbaechel --json output.json --write output_pnr.json --device "${DEVICE}" --vopt family=${FAMILY} --vopt cst=${BOARD}.cst
 
 # Generate Bitstream
 # export PATH="$HOME/.local/bin:$PATH"
@@ -38,7 +39,7 @@ test: output_test.o
 
 # Cleanup build artifacts
 clean:
-	rm output.vcd output.fs output_test.o
+	rm output.vcd output.fs output_test.o output.v
 
 .PHONY: load clean test
 .INTERMEDIATE: output_pnr.json output.json output_test.o
